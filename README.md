@@ -14,11 +14,10 @@ In this test, you are required to define a custom task that involves interaction
 
 ### Time Limit
 - **Deadline:** 4 days from joining the WeChat group and accessing this repo's url
-- **Final Submission:** Must be no later than Thursday (3.27) midnight
 
 ### Evaluation Criteria
 1. **Correctness:**  
-   - This is the most critical criterion. Your final version must be executable using our provided `runner.py`.  
+   - This is the most critical criterion. Your final version must be executable using our provided `/src/runner.py`.  
    - You may include a custom runner with additional features (such as logging) if desired, though it is not required.
 
 2. **High-Level Task Design:**  
@@ -30,7 +29,7 @@ In this test, you are required to define a custom task that involves interaction
    - Extra credit will be given for incorporating advanced features such as custom agents/objects, physical dynamics, or enhanced observations.
 
 4. **Code Style:**  
-   - You should have readable and clean code style, which is critical to team collaboration in big projects. While important, code style is a minor evaluation factor compared to functionality and task design.
+   - You should have readable and clean code style, which is critical to team collaboration in big projects. Add necessary comments to help us understand your code. While important, code style is a minor evaluation factor compared to functionality and task design. 
 
 ---
 
