@@ -13,7 +13,7 @@ In this test, you are required to define a custom task that involves interaction
 ## Key Details
 
 ### Time Limit
-- **Deadline:** 4 days from joining the WeChat group and accessing this repo's url
+- **Deadline:** March 26, 11:59 PM
 
 ### Evaluation Criteria
 1. **Correctness:**  
