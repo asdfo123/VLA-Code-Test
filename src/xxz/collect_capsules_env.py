@@ -16,7 +16,7 @@ from mani_skill.utils.sapien_utils import look_at
 @register_env("CollectCapsulesEnv-v1", max_episode_steps=100)
 class CollectCapsulesEnv(BaseEnv):
     """
-    Task: Several capsules are scattered on the table. Collect them into the bottle on the table.
+    Task: Several capsules are scattered on the table. Collect ONLY blue ones into the bottle on the table.
     """
     SUPPORTED_ROBOTS = ["panda", "fetch"]
     agent: Union[Panda, Fetch]
@@ -34,7 +34,7 @@ class CollectCapsulesEnv(BaseEnv):
         self.capsule_size = (0.01, 0.02)
         self.capsule_colors = [
             [1, 0, 0, 1],
-            [1, 1, 0, 1],
+            [0, 0, 1, 1],
             [0, 0, 1, 1],
         ]
         
@@ -189,8 +189,9 @@ class CollectCapsulesEnv(BaseEnv):
                                         - 0.02
             
             # 60°, 180°, 300° - avoid spawning inside the bin
-            angles = torch.tensor([np.pi / 3, np.pi, 5 * np.pi / 3])
-            angles = angles.unsqueeze(0).expand(b, -1)  # Shape: [b, 3]
+            # Consider different envs: need to do a separate shuffle for every env
+            angles = torch.stack([torch.tensor([np.pi/3, np.pi, 5*np.pi/3])[
+                torch.randperm(3)] for _ in range(b)])
             
             distances = min_distance + (max_distance.unsqueeze(-1) - min_distance) * torch.rand((b, 3))
             
@@ -233,40 +234,51 @@ class CollectCapsulesEnv(BaseEnv):
                 pos_z + bin_height
             ])
             
-            capsules_in_bin = []
-            for capsule in self.capsules:
+            blue_status = []
+            red_status = None
+            
+            for i, capsule in enumerate(self.capsules):
                 pos = capsule.pose.p  # [b, 3]
                 in_bin = torch.all(
                     (pos >= bin_min) & (pos <= bin_max),
                     dim=1
-                )   
-                capsules_in_bin.append(in_bin)
+                )
+                if i == 0:  # Red capsule
+                    red_status = in_bin
+                else:  # blue capsules
+                    blue_status.append(in_bin)
             
-            all_in_bin = torch.all(torch.stack(capsules_in_bin), dim=0)
+            # Success <=> All blue capsules in bin (AND) Red capsule NOT in bin
+            all_blue_in = torch.all(torch.stack(blue_status), dim=0)
+            success = all_blue_in & (~red_status)
             
             return {
-                "success": all_in_bin,  # [b]
-                "capsules_in_bin": torch.stack(capsules_in_bin) # [3, b]
+                "success": success,
+                "blue_in_bin": torch.stack(blue_status),    # [2, b]
+                "red_in_bin": red_status.unsqueeze(0)       # [1, b]
             }
 
     def compute_dense_reward(self, obs: Any, action: torch.Tensor, info: Dict):
         with torch.device(self.device):
             reward = torch.zeros(self.num_envs)
-            
-            # Reward for moving capsules toward bin center
             bin_center = torch.tensor(self.bin_center)
-            for capsule in self.capsules:
+            
+            # Movement rewards for blue capsules
+            for i in [1, 2]:  # blue capsules
                 dist = torch.linalg.norm(
-                    capsule.pose.p[..., :2] - bin_center[:2],  # Only XY distance
+                    self.capsules[i].pose.p[..., :2] - bin_center[:2],
                     dim=1
                 )
-                reward += 1 - torch.tanh(5 * dist) * 0.5  # Max 0.5 per capsule
+                reward += (1 - torch.tanh(5 * dist)) * 0.3
+                
+            # Collection bonus for blue capsules in bin
+            blue_collected = torch.sum(info["blue_in_bin"].float(), dim=0)
+            reward += blue_collected * 2.0
             
-            # Reward for capsules being inside bin
-            capsules_in_bin = info["capsules_in_bin"]
-            reward += torch.sum(capsules_in_bin.float(), dim=0) * 1.0  # +1.0 per capsule
+            # Penalty for red capsule in bin
+            reward -= torch.sum(info["red_in_bin"].float(), dim=0) * 2.0 
             
-            # Success bonus (overrides other rewards)
+            # Success bonus (override previous rewards)
             reward[info["success"]] = 10.0
             
             return reward
