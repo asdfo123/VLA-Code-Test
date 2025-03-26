@@ -28,6 +28,7 @@ class WaterCupEnv(BaseEnv):
 
     def _load_scene(self, options: dict):
         self.table_scene = TableSceneBuilder(env=self)
+        #self.table_scene = KitchenCounterSceneBuilder(env=self)
         self.table_scene.build()
         
         self.cups = []
