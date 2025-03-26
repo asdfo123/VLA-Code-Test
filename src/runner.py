@@ -3,14 +3,23 @@ import gymnasium as gym
 import time
 from mani_skill.utils.wrappers.record import RecordEpisode
 # TODO: Change this to import your env
-from card_stack_env import CardStackEnv
+from examples.card_stack_env import CardStackEnv
+from xxz.collect_capsules_env import CollectCapsulesEnv
 
 def generate_videos(n_episodes=10, max_steps_per_episode=100, video_dir="card_stack_videos"):
     """
     Generate and save videos of random agent interactions in the CardStack environment.
     """
     # TODO: Change this to make your env
-    env = gym.make("CardStack-v1", obs_mode="state", render_mode="rgb_array")
+
+    # env = gym.make("PickPlace-v1", obs_mode="state", render_mode="human")
+    # obs, _ = env.reset(options=dict(reconfigure=True))
+    # while True:
+    #     action = env.action_space.sample()
+    #     obs, reward, terminated, truncated, info = env.step(action)
+    #     env.render()
+
+    env = gym.make("CollectCapsulesEnv-v1", obs_mode="state", render_mode="rgb_array")
     video_dir = os.path.join(video_dir, time.strftime("%Y%m%d-%H%M%S"))
     os.makedirs(video_dir, exist_ok=True)
 
