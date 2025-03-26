@@ -12,12 +12,12 @@ def generate_videos(n_episodes=10, max_steps_per_episode=100, video_dir="card_st
     """
     # TODO: Change this to make your env
 
-    env = gym.make("CollectCapsulesEnv-v1", obs_mode="state", render_mode="human")
-    obs, _ = env.reset(options=dict(reconfigure=True))
-    while True:
-        action = env.action_space.sample()
-        obs, reward, terminated, truncated, info = env.step(action)
-        env.render()
+    # env = gym.make("CollectCapsulesEnv-v1", obs_mode="state", render_mode="human")
+    # obs, _ = env.reset(options=dict(reconfigure=True))
+    # while True:
+    #     action = env.action_space.sample()
+    #     obs, reward, terminated, truncated, info = env.step(action)
+    #     env.render()
 
     env = gym.make("CollectCapsulesEnv-v1", obs_mode="state", render_mode="rgb_array")
     video_dir = os.path.join(video_dir, time.strftime("%Y%m%d-%H%M%S"))
