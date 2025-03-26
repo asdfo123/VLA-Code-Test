@@ -10,7 +10,7 @@ def generate_videos(n_episodes=10, max_steps_per_episode=100, video_dir="card_st
     """
     Generate and save videos of random agent interactions in the CardStack environment.
     """
-    # TODO: Change this to make your env
+    # TODO: Change this to make your en
     env = gym.make("Customv1", obs_mode="state", render_mode="rgb_array")
     video_dir = os.path.join(video_dir, time.strftime("%Y%m%d-%H%M%S"))
     os.makedirs(video_dir, exist_ok=True)
