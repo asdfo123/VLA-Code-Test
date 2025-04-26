@@ -1,6 +1,6 @@
 ## Custom Env: Place the Flag 🚩 at the Specified Location (PlaceFlag-v2)
 
-A reinforcement learning environment where an agent must place a flag into a designated hole while maintaining vertical orientation.
+A reinforcement learning environment where a robot must place a flag into a designated hole while maintaining vertical orientation.
 
 ### Task Description
 - A digital agent operates a GUI interface by clicking or moving to specific locations to mark certain targets (Flags), changing their status (e.g., setting them as "Completed," "Special Reminder," etc.).
